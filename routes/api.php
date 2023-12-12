@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,15 +31,15 @@ Route::group(['middleware'=> []], function (){
 });
 
 Route::group(['middleware' => ['tokenVerify', 'admin']],function (){
-//    Route::get('home', [AdminController::class, 'index'])->name('dashboard');                // Name route
-//    Route::get('post/tag/{id}', [HomeController::class, 'tagposts'])->name('tagpost');       // Name route
-
     Route::get('/users', [UserController::class, 'Index']);
     Route::resource('/projects', ProjectController::class);
+    Route::resource('/tasks', TaskController::class);
 });
 
 Route::group(['middleware' => ['tokenVerify']],function (){
-    Route::get('user/projects', [ProjectController::class, 'Index']);
+    Route::get('user/projects', [ProjectController::class, 'index']);
+    Route::get('user/tasks', [ProjectController::class, 'index']);
+    Route::put('user/{id}/tasks', [ProjectController::class, 'taskStatusUpdate']);
 });
 
 

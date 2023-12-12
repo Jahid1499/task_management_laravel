@@ -23,13 +23,11 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors(),
             ], 422);
         }
-
         $user = User::where('email', $request->input('email'))->first();
 
         if ($user == null)

@@ -48,6 +48,7 @@ class ProjectController extends Controller
             'description' => 'required',
             'participants' => 'required',
             'color' => 'required',
+            'status'=> 'sometimes|in: active, inactive'
         ]);
 
         if ($validator->fails()) {
@@ -61,11 +62,10 @@ class ProjectController extends Controller
                 'description' => $request->input('description'),
                 'participants' => $request->input('participants'),
                 'color' => $request->input('color'),
-                'status' => $request->input('status') || "active",
-                'startDate' => $request->input('startDate') || now(),
+                'status' => $request->input('status', "active"),
+                'startDate' => $request->input('startDate', now()),
             ]);
-
-            return response()->json(['project' => $project], 200);
+            return response()->json(['project' => $project, 'message' => 'Project crated successfully'], 200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -92,7 +92,6 @@ class ProjectController extends Controller
         {
             return response()->json(['errors' => "Project not found"], 422);
         }
-
         return response()->json(['project' => $project], 200);
     }
 
@@ -106,6 +105,7 @@ class ProjectController extends Controller
             'description' => 'required',
             'participants' => 'required',
             'color' => 'required',
+            'status'=> 'sometimes|in: active, inactive'
         ]);
 
         if ($validator->fails()) {
@@ -115,16 +115,16 @@ class ProjectController extends Controller
         }
 
         try {
-            $project = User::findOrFail($id)->update([
+            $project = Project::findOrFail($id)->update([
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
                 'participants' => $request->input('participants'),
                 'color' => $request->input('color'),
-                'status' => $request->input('status') || "active",
-                'startDate' => $request->input('startDate') || now(),
+                'status' => $request->input('status', "active"),
+                'startDate' => $request->input('startDate', now()),
             ]);
 
-            return response()->json(['project' => $project], 200);
+            return response()->json(['project' => $project, 'message' => 'Project update successfully'], 200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -141,9 +141,9 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         if ($project == null)
         {
-            return response()->json(['errors' => "Project not found"], 422);
+            return response()->json(['errors' => "Project not found"], 404);
         }
         $project->delete();
-        return response()->json(['message' => 'Project successfully deleted'], 200);
+        return response()->json(['message' => 'Project delete successfully'], 200);
     }
 }
