@@ -2,12 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Helper\JWTToken;
+use App\Models\Project;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TokenVerificationMiddleware
+class AdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,15 +17,12 @@ class TokenVerificationMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token=$request->header('Authorization');
-        $result=JWTToken::VerifyToken($token);
-        if($result=="unauthorised"){
+        $user_id=$request->header('id');
+        $user = User::findOrFail($user_id);
+        if ($user->role !== "admin")
+        {
             return response()->json(['error' => 'unauthorised request'], 401);
         }
-
-        $request->headers->set('email',$result->userEmail);
-        $request->headers->set('id',$result->userID);
-
         return $next($request);
     }
 }
