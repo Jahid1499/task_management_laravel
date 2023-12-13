@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -43,12 +44,14 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+
+
         $validator = Validator::make(request()->all(), [
             'title' => 'required',
             'description' => 'required',
             'participants' => 'required',
             'color' => 'required',
-            'status'=> 'sometimes|in: active, inactive'
+            'status'=> 'sometimes|in:active,inactive'
         ]);
 
         if ($validator->fails()) {
@@ -56,14 +59,16 @@ class ProjectController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+
+
         try {
-            $project = User::create([
+            $project = Project::create([
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
                 'participants' => $request->input('participants'),
                 'color' => $request->input('color'),
                 'status' => $request->input('status', "active"),
-                'startDate' => $request->input('startDate', now()),
+                'startDate' => Carbon::parse($request->input('startDate', now())),
             ]);
             return response()->json(['project' => $project, 'message' => 'Project crated successfully'], 200);
 
@@ -105,7 +110,7 @@ class ProjectController extends Controller
             'description' => 'required',
             'participants' => 'required',
             'color' => 'required',
-            'status'=> 'sometimes|in: active, inactive'
+            'status'=> 'sometimes|in:active,inactive'
         ]);
 
         if ($validator->fails()) {
