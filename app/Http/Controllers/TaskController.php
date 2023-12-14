@@ -18,15 +18,18 @@ class TaskController extends Controller
     {
         $user_id=$request->header('id');
         $user = User::findOrFail($user_id);
+
+        if (!$user){
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
         if ($user->role == "admin")
         {
-            $tasks = Task::all();
+            $tasks = Task::with('project:id,title')->with('users:id,name,email')->get();
             return response()->json(['tasks' => $tasks], 200);
         }else{
             $user = User::with('tasks')->findOrFail($user_id);
-            if (!$user) {
-                return response()->json(['error' => 'User not found'], 404);
-            }
+            $tasks = Task::all();
             $tasks = $user->tasks;
             return response()->json(['tasks' => $tasks], 200);
         }
@@ -46,13 +49,13 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make(request()->all(), [
-            'name' => 'required',
+            'title' => 'required',
             'startDate' => 'required',
             'endDate' => 'required',
             'project_id' => 'required',
             'description' => 'required',
-            'assign' => 'required|array|min:1',
-            'status'=> 'sometimes|in: pending, ongoing,done'
+            'assign' => 'required',
+            'status'=> 'sometimes|in:pending,ongoing,done'
         ]);
 
         if ($validator->fails()) {
@@ -62,8 +65,8 @@ class TaskController extends Controller
         }
 
         try {
-            $task = User::create([
-                'name' => $request->input('name'),
+            $task = Task::create([
+                'title' => $request->input('title'),
                 'status' => $request->input('status', 'active'),
                 'startDate' => $request->input('startDate'),
                 'endDate' => $request->input('endDate'),
@@ -109,13 +112,13 @@ class TaskController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make(request()->all(), [
-            'name' => 'required',
+            'title' => 'required',
             'startDate' => 'required',
             'endDate' => 'required',
             'project_id' => 'required',
             'description' => 'required',
-            'assign' => 'required|array|min:1',
-            'status'=> 'sometimes|in: pending, ongoing,done'
+            'assign' => 'required',
+            'status'=> 'sometimes|in:pending,ongoing,done'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -128,7 +131,7 @@ class TaskController extends Controller
                 return response()->json(['error' => 'Task not found'], 404);
             }
             $task->update([
-                'name' => $request->input('name'),
+                'title' => $request->input('title'),
                 'status' => $request->input('status', 'active'),
                 'startDate' => $request->input('startDate'),
                 'endDate' => $request->input('endDate'),

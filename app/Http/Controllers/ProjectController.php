@@ -100,6 +100,27 @@ class ProjectController extends Controller
         return response()->json(['project' => $project], 200);
     }
 
+    public function projectDetails(string $id)
+    {
+        $project = Project::findOrFail($id);
+        if ($project == null)
+        {
+            return response()->json(['errors' => "Project not found"], 422);
+        }
+        $projectParticipantsString = $project->participants;
+        $projectParticipantsStringArray = explode(',', $projectParticipantsString);
+        $resultsArray = [];
+
+        foreach ($projectParticipantsStringArray as $email) {
+            $user = User::where('email', $email)->select('id', 'name')->first();
+            if ($user !== null){
+                $resultsArray[] = $user;
+            }
+        }
+
+        return response()->json(['users' => $resultsArray], 200);
+    }
+
     /**
      * Update the specified resource in storage.
      */
