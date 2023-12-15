@@ -28,9 +28,8 @@ class TaskController extends Controller
             $tasks = Task::with('project:id,title')->with('users:id,name,email')->get();
             return response()->json(['tasks' => $tasks], 200);
         }else{
-            $user = User::with('tasks')->findOrFail($user_id);
-            $tasks = Task::all();
-            $tasks = $user->tasks;
+
+            $tasks = $user->userTasks()->with('users:id,name')->get();
             return response()->json(['tasks' => $tasks], 200);
         }
     }
@@ -155,7 +154,7 @@ class TaskController extends Controller
     public function taskStatusUpdate(Request $request, string $id)
     {
         $validator = Validator::make(request()->all(), [
-            'status'=> 'required | in: pending, ongoing,done'
+            'status'=> 'required|in:pending,ongoing,done'
         ]);
         if ($validator->fails()) {
             return response()->json([

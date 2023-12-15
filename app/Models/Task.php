@@ -19,4 +19,11 @@ class Task extends Model
     {
         return $this->belongsTo(Project::class, 'project_id');
     }
+
+    public function taskUsers()
+    {
+        return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id');
+    }
+
+
 }

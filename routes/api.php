@@ -37,10 +37,10 @@ Route::group(['middleware' => ['tokenVerify', 'admin']],function (){
 });
 
 Route::group(['middleware' => ['tokenVerify']],function (){
-    Route::get('user/projects', [ProjectController::class, 'index']);
+    Route::get('projects', [ProjectController::class, 'index']);
     Route::get('user/projects/{id}', [ProjectController::class, 'projectDetails']);
-    Route::get('user/tasks', [ProjectController::class, 'index']);
-    Route::put('user/{id}/tasks', [ProjectController::class, 'taskStatusUpdate']);
+    Route::get('tasks', [TaskController::class, 'index']);
+    Route::PATCH('user/{id}/tasks', [TaskController::class, 'taskStatusUpdate']);
 });
 
 
