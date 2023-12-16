@@ -17,18 +17,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 Route::post('/login', [UserController::class, 'Login']);
 Route::post('/registration', [UserController::class, 'Registration']);
 Route::post('/logout', [UserController::class, 'Logout']);
 
-
-Route::group(['middleware'=> []], function (){
-
-});
 
 Route::group(['middleware' => ['tokenVerify', 'admin']],function (){
     Route::get('/users', [UserController::class, 'Index']);

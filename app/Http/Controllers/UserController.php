@@ -32,12 +32,12 @@ class UserController extends Controller
 
         if ($user == null)
         {
-            return response()->json(['error' => 'User not found'], 404);
+            return response()->json(['error' => 'User not found'], 422);
         }
 
         if ($user->password != $request->input('password'))
         {
-            return response()->json(['error' => 'Incorrect password'], 401);
+            return response()->json(['error' => 'Incorrect password'], 422);
         }
 
         $token = JWTToken::CreateToken($user->email, $user->id);
@@ -89,11 +89,5 @@ class UserController extends Controller
                 'errors' => "Failed to registration",
             ], 422);
         }
-    }
-
-    public function Logout(Request $request)
-    {
-
-
     }
 }
